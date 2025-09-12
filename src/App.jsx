@@ -5,7 +5,6 @@ import ContactList from "./components/ContactList/ContactList.jsx";
 import Filter from "./components/Filter/Filter.jsx";
 import { Box, Title1, Title2 } from "./App.js";
 
-
 class App extends Component {
   state = {
     contacts: [
@@ -17,14 +16,31 @@ class App extends Component {
     filter: "",
   };
 
+  componentDidMount() {
+    const savedContacts = localStorage.getItem("contacts");
+    if (savedContacts) {
+      this.setState({ contacts: JSON.parse(savedContacts) });
+    }
+  }
+
+  componentDidUpdate(prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
+    }
+  }
+
   addContact = (name, number) => {
     const { contacts } = this.state;
 
-    const existingContact = contacts.find(
-      (contact) => contact.name.toLowerCase() === name.toLowerCase()
-    );
+    let isExist = false;
+    for (let contact of contacts) {
+      if (contact.name.toLowerCase() === name.toLowerCase()) {
+        isExist = true;
+        break;
+      }
+    }
 
-    if (existingContact) {
+    if (isExist) {
       alert(`${name} is already in contacts`);
       return;
     }
